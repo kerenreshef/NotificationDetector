@@ -1,9 +1,9 @@
-import json
 import logging
 from datetime import datetime
 
 from flask import Flask, request
 
+from backend.utils import save_error_to_file
 from events import PushEvent, TeamEvent, RepoEvent
 
 logger = logging.getLogger(__name__)
@@ -14,26 +14,6 @@ EVENT_HANDLERS = {
     'team': TeamEvent(),
     'repository': RepoEvent()
 }
-
-
-def save_error_to_file(payload: dict, error_type: str, error_message: str) -> None:
-    """
-    Saves error information to a file named 'errors.log' in JSON format.
-    :param payload: The payload that caused the error.
-    :param error_type: The type of error encountered.
-    :param error_message: The error message associated with the exception.
-    :return:
-    """
-
-    error_data = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "payload": payload,
-        "error_type": error_type,
-        "error_message": error_message,
-    }
-
-    with open("errors.log", "a") as error_file:
-        json.dump(error_data, error_file)
 
 
 @app.route('/', methods=['POST'])
@@ -48,8 +28,10 @@ def handle_webhook():
             logger.debug(f"Unknown event type: {event_type}")
     except Exception as e:
         error_type = type(e).__name__
+        error_msg = str(e)
+        error_time = datetime.utcnow().isoformat()
         logger.error(f"An error occurred: {error_type} , while trying to process the event: {payload}.")
-        save_error_to_file(payload, error_type, str(e))
+        save_error_to_file(payload, error_type, error_msg, error_time)
 
     return 'Webhook Received', 200
 

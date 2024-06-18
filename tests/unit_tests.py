@@ -1,7 +1,9 @@
+import json
+import os
 import unittest
 from datetime import datetime, timedelta
 
-from backend.utils import is_between_time_range
+from backend.utils import is_between_time_range, save_error_to_file
 
 
 class TestTimeRangeCheck(unittest.TestCase):
@@ -39,6 +41,41 @@ class TestTimeRangeCheck(unittest.TestCase):
         """Tests if an invalid datetime object raises an error."""
         with self.assertRaises(AttributeError):
             is_between_time_range(self.invalid_time_format, self.start_time, self.end_time)
+
+
+class TestSaveErrorToFile(unittest.TestCase):
+
+    def test_save_error_data_and_check_file(self):
+        """
+        Tests if error data is written to the file in JSON format and the file is created.
+        """
+        payload = {"key": "value"}
+        error_type = "TestError"
+        error_message = "An error occurred."
+        error_time = datetime.utcnow().isoformat()
+
+        save_error_to_file(payload, error_type, error_message, error_time)
+
+        expected_data = {
+            "timestamp": error_time,
+            "payload": payload,
+            "error_type": error_type,
+            "error_message": error_message,
+        }
+
+        # assert that the errors file exists
+        self.assertTrue(os.path.exists("errors.log"))
+
+        # open the file read its contents
+        with open("errors.log", "r") as error_file:
+            actual_data = json.load(error_file)
+
+        self.assertEqual(actual_data, expected_data)
+
+    def tearDown(self):
+        """Deletes the created 'errors.log' file after the test."""
+        if os.path.exists("errors.log"):
+            os.remove("errors.log")
 
 
 if __name__ == "__main__":
