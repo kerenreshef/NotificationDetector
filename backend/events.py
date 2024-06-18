@@ -30,7 +30,7 @@ class PushEvent(GitHubEvent):
     def __init__(self):
         super().__init__('push')
 
-    def handle(self, data: dict):
+    def handle(self, data: dict) -> None:
         repository = data.get("repository")
         repo_name = repository.get("name")
         pushed_timestamp = repository.get("pushed_at")
@@ -39,7 +39,8 @@ class PushEvent(GitHubEvent):
         end_time = "16:00"
 
         if is_between_time_range(pushed_datetime, start_time, end_time):
-            logger.warning(f"Suspicious behavior detected: pushing code to repo {repo_name} between {start_time}-{end_time}")
+            logger.warning(f"Suspicious behavior detected: pushing code to repo {repo_name} between {start_time}-{end_time}."
+                           f"Event: {data}")
 
 
 class RepoEvent(GitHubEvent):
@@ -52,16 +53,16 @@ class RepoEvent(GitHubEvent):
             'deleted': self._handle_delete,
         }
 
-    def handle(self, data: dict):
+    def handle(self, data: dict) -> None:
         action = data.get("action")
 
         # Check if an action handler exists for this event
         if action in self.action_handlers:
             self.action_handlers[action](data)
         else:
-            logger.error(f"Unknown Team event action: {action}")
+            logger.error(f"Unknown Repo event action: {action}")
 
-    def _handle_delete(self, data):
+    def _handle_delete(self, data: dict) -> None:
         repo_obj = data.get("repository")
         repo_name = repo_obj.get("name")
         repo_create_str = repo_obj.get("created_at")
@@ -76,7 +77,8 @@ class RepoEvent(GitHubEvent):
         minutes_diff = time_diff.total_seconds() / 60
         if minutes_diff < 10:
             logger.warning(
-                f"Suspicious behavior detected: repository {repo_name} was created and deleted in less than 10 minutes")
+                f"Suspicious behavior detected: repository {repo_name} was created and deleted in less than 10 minutes."
+                f"Event: {data}")
 
 
 class TeamEvent(GitHubEvent):
@@ -88,7 +90,7 @@ class TeamEvent(GitHubEvent):
             'created': self._handle_create,
         }
 
-    def handle(self, data: dict):
+    def handle(self, data: dict) -> None:
         action = data.get("action")
 
         # Check if an action handler exists for this event
@@ -97,8 +99,9 @@ class TeamEvent(GitHubEvent):
         else:
             logger.error(f"Unknown Team event action: {action}")
 
-    def _handle_create(self, data: dict):
+    def _handle_create(self, data: dict) -> None:
         team_name: str = data.get("team").get("name")
         if team_name.lower().startswith("hacker"):
-            logger.warning(f"Suspicious behavior detected: team {team_name} was created with the prefix 'hacker'.")
+            logger.warning(f"Suspicious behavior detected: team {team_name} was created with the prefix 'hacker'."
+                           f"Event: {data}")
 
