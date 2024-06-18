@@ -30,6 +30,6 @@ def is_between_time_range(datetime_obj, start_time, end_time):
         return False
 
     # Extract time portion from the timestamp
-    timestamp_time_obj = timestamp_obj.time()
+    timestamp_time_obj = datetime_obj.time()
 
     return start_time_obj <= timestamp_time_obj <= end_time_obj
