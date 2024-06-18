@@ -31,8 +31,9 @@ class PushEvent(GitHubEvent):
         super().__init__('push')
 
     def handle(self, data: dict):
-        pushed_timestamp = data.get("pushed_at")
-        repo_name = data.get("repository").get("name")
+        repository = data.get("repository")
+        pushed_timestamp = repository.get("pushed_at")
+        repo_name = repository.get("name")
         # start_time = "14:00"
         # end_time = "16:00"
         start_time = "03:00"
