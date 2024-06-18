@@ -1,25 +1,31 @@
+import logging
+
 from flask import Flask, request
 
+from events import PushEvent, TeamEvent, RepoEvent
+
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
+
+EVENT_HANDLERS = {
+    'push': PushEvent(),
+    'team': TeamEvent(),
+    'repository': RepoEvent()
+}
 
 
 @app.route('/', methods=['POST'])
 def handle_webhook():
-    # Access the webhook payload data (JSON format)
-    data = request.get_json()
-    print(data)
-    # Process the payload based on its type (e.g., push, pull_request)
-    # if data['action'] == 'push':
-    #     # Handle push events (e.g., update code in your application)
-    #     print(f"Received push event: {data}")
-    # elif data['action'] == 'pull_request':
-    #     # Handle pull request events (e.g., review code changes)
-    #     print(f"Received pull request event: {data}")
-    # else:
-    #     # Handle other event types if needed
-    #     print(f"Received unknown event: {data}")
+    payload = request.get_json()
 
-    return 'Webhook Received', 200  # Return a success response
+    event_type = request.headers.get("X-GitHub-Event")
+
+    if event_type in EVENT_HANDLERS:
+        EVENT_HANDLERS[event_type].handle(payload)
+    else:
+        logger.error(f"Unknown event type: {event_type}")
+
+    return 'Webhook Received', 200
 
 
 if __name__ == '__main__':
