@@ -32,13 +32,14 @@ class PushEvent(GitHubEvent):
 
     def handle(self, data: dict):
         repository = data.get("repository")
-        pushed_timestamp = repository.get("pushed_at")
         repo_name = repository.get("name")
+        pushed_timestamp = repository.get("pushed_at")
+        pushed_datetime = datetime.fromtimestamp(pushed_timestamp)
         # start_time = "14:00"
         # end_time = "16:00"
         start_time = "03:00"
         end_time = "05:00"
-        if is_between_time_range(pushed_timestamp, start_time, end_time):
+        if is_between_time_range(pushed_datetime, start_time, end_time):
             logger.warning(f"Suspicious behavior detected: pushing code to repo {repo_name} between {start_time}-{end_time}")
 
 
