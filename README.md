@@ -1,13 +1,18 @@
-# NotificationDetector
+# Notification Detector
 
 ### Project Build & Run Instructions:
 1. Clone the project from the GitHub repository:
     https://github.com/kerenreshef/NotificationDetector
-2. Run the backend server:
+2. Install project requirements: 
+   ```console
+    pip install requirements.txt
+    ```
+3. Run the backend server:
    ```console
     python app.py
     ```
-3. Run ngrok tool for tunneling webhooks events from GitHub:
+4. Run ngrok tool for tunneling webhooks events from GitHub:
     ```console
     ngrok http 5000
     ```
+5. Copy the forwarding generated url and set it as Payload URL when defining organization webhook.

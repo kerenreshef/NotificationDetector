@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +13,6 @@ def is_between_time_range(datetime_obj, start_time, end_time):
     :return: True if the timestamp is between start_time and end_time, False otherwise.
     """
 
-    # try:
-    #     # Parse timestamp string to datetime object. Assuming specific format
-    #     timestamp_obj = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ")
-    # except ValueError:
-    #     logger.error(f"Invalid timestamp format. Returning False.")
-    #     return False
-
-    # Parse start and end times as datetime objects
     try:
         start_time_obj = datetime_obj.strptime(start_time, "%H:%M").time()
         end_time_obj = datetime_obj.strptime(end_time, "%H:%M").time()
@@ -29,7 +20,6 @@ def is_between_time_range(datetime_obj, start_time, end_time):
         print(f"Invalid time format for start_time or end_time.")
         return False
 
-    # Extract time portion from the timestamp
-    timestamp_time_obj = datetime_obj.time()
+    datetime_time_obj = datetime_obj.time()
 
-    return start_time_obj <= timestamp_time_obj <= end_time_obj
+    return start_time_obj <= datetime_time_obj <= end_time_obj
