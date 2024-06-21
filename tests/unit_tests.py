@@ -3,7 +3,7 @@ import os
 import unittest
 from datetime import datetime, timedelta
 
-from backend.utils import is_between_time_range, save_error_to_file
+from utils import is_between_time_range, save_error_to_file
 
 
 class TestTimeRangeCheck(unittest.TestCase):

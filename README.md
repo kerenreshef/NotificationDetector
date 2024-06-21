@@ -9,7 +9,7 @@
     ```
 3. Run the backend server:
    ```console
-    python app.py
+    python webhook_handler.py
     ```
 4. Run ngrok tool for tunneling webhooks events from GitHub:
     ```console
